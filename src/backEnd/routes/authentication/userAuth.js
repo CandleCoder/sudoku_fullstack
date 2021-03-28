@@ -15,27 +15,23 @@ router.post("/register", async (req, res) => {
   // New User Object
   const user = new User({
     username: req.body.username,
-    email: req.body.email,
     password: req.body.password,
     role: "REGISTEREDUSER",
     generatedSudoku: null,
-    sudokuSolution: null,
+    userSudokuData: null,
   });
-
   try {
     // Save the user
     user.save((saveError, savedUser) => {
-      if (saveError)
-        logger.log(saveError);
+      if (saveError) logger.log(saveError);
       console.log(savedUser);
-      return res.status(StatusCodes.CREATED).send(ReasonPhrases.CREATED);
+      Promise.resolve(res.status(StatusCodes.CREATED).send(ReasonPhrases.CREATED));
     });
   } catch (err) {
-    return res
+    Promise.resolve(res
       .status(StatusCodes.INTERNAL_SERVER_ERROR)
-      .send(ReasonPhrases.INTERNAL_SERVER_ERROR);
+      .send(ReasonPhrases.INTERNAL_SERVER_ERROR));
   }
-  return true;
 });
 
 // Login into app with username and password in body
@@ -61,26 +57,42 @@ router.post("/login", async (req, res) => {
       accessToken,
     });
   } else {
-    res.send("Username or password incorrect");
+    Promise.resolve(res.send("Username or password incorrect"));
   }
 });
 
 // To get a new Sudoku Game
 router.put("/createNewGame", JWTAuthenticator, async (req, res) => {
-  const { username } = req.body;
+  const username = req.username;
   let puzzle = sudoku.makepuzzle();
   const user = await User.findOne({ username: username }).exec();
-  const update = { generatedSudoku: puzzle };
-  await user.updateOne(update);
-  res.json(user.generatedSudoku);
+  if (user && user.generatedSudoku === null) {
+    const update = { generatedSudoku: puzzle };
+    await User.findOneAndUpdate({ username: username }, update , (err , user) => {
+      Promise.resolve(res.json(user));
+    }).exec();
+    console.log("Newly Created");
+  } else {
+    console.log("Old Game Returned");
+    Promise.resolve(res.json(user));
+  }
 });
 
 router.get("/solution", JWTAuthenticator, async (req, res) => {
-  const { username } = req.body;
+  const username = req.username;
   const user = await User.findOne({ username: username }).exec();
   let puzzle = user.generatedSudoku;
   const solution = sudoku.solvepuzzle(puzzle);
-  res.json(solution);
+  Promise.resolve(res.json(solution));
+});
+
+router.put("/reset", JWTAuthenticator, async (req, res) => {
+  const username = req.username;
+  const update = { generatedSudoku: null, userSudokuData: null };
+  await User.findOneAndUpdate({ username: username }, update , (err , user) => {
+    Promise.resolve(res.json(user));
+  }).exec();
+  console.log("Reset Completed");
 });
 
 module.exports = router;
