@@ -11,7 +11,8 @@ module.exports = (req, res, next) => {
             if (err) {
                 return res.sendStatus(StatusCodes.FORBIDDEN)
             }
-            req.user = user
+            req.username = user.username
+            req.userId = user._id
             next()
         })
     } else {

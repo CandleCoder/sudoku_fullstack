@@ -23,5 +23,14 @@ const userSchema = new mongoose.Schema({
         min: 6,
         max: 1024,
       },
+      generatedSudoku: {
+        type: Object
+      },
+      userSudokuData: {
+        type: Object
+      },
+      sudokuSolution: {
+        type: Object
+      }
 }, { timestamps: true })
 module.exports = mongoose.model('User', userSchema)

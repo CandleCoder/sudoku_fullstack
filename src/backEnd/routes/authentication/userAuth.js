@@ -3,9 +3,10 @@ const jwt = require('jsonwebtoken')
 const { ReasonPhrases, StatusCodes } = require('http-status-codes')
 const User = require('../../models/userModel')
 const JWTAuthenticator = require('../../middleware/JWTAuthenticator')
+const sudoku = require('sudoku')
 
 
-// Register
+// Register a USER on the basis of unique username
 router.post('/register', async (req, res) => {
     // Check if User Exists in DB
     const userNameExists = await User.findOne({ username: req.body.username })
@@ -17,6 +18,8 @@ router.post('/register', async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       role: 'REGISTEREDUSER',
+      generatedSudoku: null,
+      sudokuSolution: null
     })
 
     try {
@@ -32,6 +35,7 @@ router.post('/register', async (req, res) => {
     return true
   })
 
+// Login into app with username and password in body
 router.post('/login', async (req, res) => {
     // Read username and password from request body
     const { username, password } = req.body
@@ -41,7 +45,7 @@ router.post('/login', async (req, res) => {
 
     if (user) {
         // Generate an access token
-        const accessToken = jwt.sign({ username: user.username,  role: user.role }, process.env.ACCESS_SECRET_TOKEN)
+        const accessToken = jwt.sign({ username: user.username,  role: user.role, userId: user._id }, process.env.ACCESS_SECRET_TOKEN, { noTimestamp:true, expiresIn: '12h' })
 
         res.json({
             accessToken
@@ -51,8 +55,14 @@ router.post('/login', async (req, res) => {
     }
 })
 
-router.get('/currentGame', JWTAuthenticator, async (req, res) => {
-    res.json('Done')
+router.get('/createNewGame', JWTAuthenticator, async (req, res) => {
+  const { username } = req.body
+    let puzzle = sudoku.makepuzzle()
+    let solvedPuzzle = sudoku.solvepuzzle(puzzle)
+    const user = await User.findOne({username: username}).exec()
+    const update = { generatedSudoku: puzzle, sudokuSolution: solvedPuzzle }
+    await user.updateOne(update)
+    res.json(user)
 })
 
 module.exports = router
