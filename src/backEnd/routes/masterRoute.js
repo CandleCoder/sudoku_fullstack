@@ -1,9 +1,9 @@
 const router = require('express').Router()
 
 // import routes
-const authRoute = require('./authentication/userAuth');
+const authRoute = require('./authentication/userAuth')
 
 // Route Middleware
-router.use('/api/', authRoute);
+router.use('/api/', authRoute)
 
-module.exports = router;
+module.exports = router

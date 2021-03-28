@@ -17,20 +17,20 @@ router.post('/register', async (req, res) => {
       email: req.body.email,
       password: req.body.password,
       role: 'REGISTEREDUSER',
-    });
+    })
 
     try {
       // Save the user
       await user.save((saveError, savedUser) => {
         if (saveError) logger.log(saveError)
-        console.log(savedUser);
+        console.log(savedUser)
         return res.status(StatusCodes.CREATED).send(ReasonPhrases.CREATED)
-      });
+      })
     } catch (err) {
       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send(ReasonPhrases.INTERNAL_SERVER_ERROR)
     }
     return true
-  });
+  })
 
 router.post('/login', async (req, res) => {
     // Read username and password from request body
@@ -45,14 +45,14 @@ router.post('/login', async (req, res) => {
 
         res.json({
             accessToken
-        });
+        })
     } else {
         res.send('Username or password incorrect')
     }
-});
+})
 
 router.get('/currentGame', JWTAuthenticator, async (req, res) => {
-    res.json('Done');
+    res.json('Done')
 })
 
 module.exports = router
