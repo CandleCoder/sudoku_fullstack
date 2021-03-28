@@ -5,7 +5,7 @@ const User = require("../../models/userModel");
 const JWTAuthenticator = require("../../middleware/JWTAuthenticator");
 const sudoku = require("sudoku");
 
-// Register a USER on the basis of unique username
+// API to Register a USER on the basis of unique username
 router.post("/register", async (req, res) => {
   // Check if User Exists in DB
   const userNameExists = await User.findOne({ username: req.body.username });
@@ -34,7 +34,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// Login into app with username and password in body
+// API to Login into app with username and password in body
 router.post("/login", async (req, res) => {
   // Read username and password from request body
   const { username, password } = req.body;
@@ -61,7 +61,7 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// To get a new Sudoku Game
+// API To get a new Sudoku Game
 router.put("/createNewGame", JWTAuthenticator, async (req, res) => {
   const username = req.username;
   let puzzle = sudoku.makepuzzle();
@@ -78,6 +78,7 @@ router.put("/createNewGame", JWTAuthenticator, async (req, res) => {
   }
 });
 
+// API to get the Puzzle Solution
 router.get("/solution", JWTAuthenticator, async (req, res) => {
   const username = req.username;
   const user = await User.findOne({ username: username }).exec();
@@ -86,6 +87,7 @@ router.get("/solution", JWTAuthenticator, async (req, res) => {
   Promise.resolve(res.json(solution));
 });
 
+// API to Reset the Puzzle
 router.put("/reset", JWTAuthenticator, async (req, res) => {
   const username = req.username;
   const update = { generatedSudoku: null, userSudokuData: null };
@@ -93,6 +95,16 @@ router.put("/reset", JWTAuthenticator, async (req, res) => {
     Promise.resolve(res.json(user));
   }).exec();
   console.log("Reset Completed");
+});
+
+// API to Update the User Input Sudoku
+router.put("/updatePuzzleData", JWTAuthenticator, async (req, res) => {
+  const username = req.username;
+  const update = { userSudokuData: req.body.userSudokuData };
+  await User.findOneAndUpdate({ username: username }, update , (err , user) => {
+    Promise.resolve(res.json(user.userSudokuData));
+  }).exec();
+  console.log("Updated");
 });
 
 module.exports = router;
