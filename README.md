@@ -24,7 +24,7 @@ To Start Front End App Run the Below Command From public Folder placed in Root D
 BACKEND APIs Detail to Register, Login,  CreateSudokuGame, Getting Solution, Reset Puzzle, Update Puzzle Data on User Inputs are Respectively : 
 ```javascript
  v1/api/register
- v1/api/Login
+ v1/api/login
  v1/api/createNewGame
  v1/api/solution
  v1/api/reset
