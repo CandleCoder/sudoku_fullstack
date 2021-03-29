@@ -23,9 +23,9 @@ router.post("/register", async (req, res) => {
   try {
     // Save the user
     user.save((saveError, savedUser) => {
-      if (saveError) logger.log(saveError);
+      if (saveError) console.log(saveError);
       console.log(savedUser);
-      Promise.resolve(res.status(StatusCodes.CREATED).send(ReasonPhrases.CREATED));
+      Promise.resolve(res.status(StatusCodes.OK).send(savedUser));
     });
   } catch (err) {
     Promise.resolve(res
@@ -38,7 +38,6 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   // Read username and password from request body
   const { username, password } = req.body;
-
   // Filter user from the users array by username and password
   const user = await User.findOne({
     username: username,
@@ -57,7 +56,7 @@ router.post("/login", async (req, res) => {
       accessToken,
     });
   } else {
-    Promise.resolve(res.send("Username or password incorrect"));
+    Promise.resolve(res.json("Username or password incorrect"));
   }
 });
 

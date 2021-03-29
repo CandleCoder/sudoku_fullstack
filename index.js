@@ -7,6 +7,7 @@ const logger = require("morgan");
 require("./src/utils/db/mongoConnector");
 const masterRoute = require("./src/routes/masterRoute");
 
+app.use(cors());
 // Send in Response if the App is Running in Default Route
 app.get("/", (req, res) => {
   res.send("App is Running Fine");
@@ -18,7 +19,6 @@ app.use(express.json());
 app.use("/v1", masterRoute);
 
 app.use(logger('dev'));
-app.use(cors());
 
 // Console If the App is Running on Port or Not
 app.listen(port, () => {
