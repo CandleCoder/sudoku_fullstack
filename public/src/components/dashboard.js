@@ -2,8 +2,15 @@ import React, { Component } from "react";
 
 export default class Dashboard extends Component {
 
-   componentDidMount() {
-    console.log(window.accessToken)
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      dataIsReturned : false
+    }
+  }
+  componentWillMount() {
+     this.callForSudokuInit();
    }
 
     callForSudokuInit() {
@@ -19,17 +26,60 @@ export default class Dashboard extends Component {
           alert("Error in Login");
           return Promise.reject(error);
         } else if (response.ok) {
-           console.log(data);
+          this.setState({ sudoku: data.generatedSudoku });
+          this.setState({dataIsReturned : true});
         }
-      })
-      .catch((error) => {
+      }).catch((error) => {
         this.setState({ errorMessage: error.toString() });
         alert("There was an error!", error);
       });
   }
 
+  listToMatrix(list, elementsPerSubArray) {
+    var matrix = [], i, k;
+
+    for (i = 0, k = -1; i < list.length; i++) {
+        if (i % elementsPerSubArray === 0) {
+            k++;
+            matrix[k] = [];
+        }
+
+        matrix[k].push(list[i]);
+    }
+    console.log(matrix)
+    return matrix;
+}
+
   render() {
-    this.callForSudokuInit();
-    return <h3>Dashboard</h3>;
+    if (this.state.dataIsReturned) {
+      let { sudoku } = this.state;
+      sudoku = this.listToMatrix(sudoku, 9);
+      console.log(sudoku)
+      return (
+        <div>
+          <h3> sudoku </h3>
+          {sudoku.map((row, i) => (
+            <div key={i}>
+              {row.map((col, j) => (
+                <input
+                type="text"
+                value={col}
+                disabled={true}
+             />
+              ))}
+            </div>
+          ))}
+          <button type="submit" className="btn btn-primary btn-block">
+          Check Answer
+          </button>
+
+          <button type="submit" className="btn btn-primary btn-block">
+          Reset sudoku
+          </button>
+        </div>
+      );
+    } else {
+      return null;
+    }
   }
 }
