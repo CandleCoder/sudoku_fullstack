@@ -1,10 +1,11 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { Component } from "react";
+import { withRouter } from 'react-router'
 
-export default class Login extends Component {
+export class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = { username: "", password: "", accessToken: "" };
+    this.state = { username: "", password: ""};
     this.handleChange = this.handleChangeUserName.bind(this);
     this.handleChange = this.handleChangePassword.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -18,10 +19,9 @@ export default class Login extends Component {
   };
 
   handleSubmit(event) {
-    const { history } = this.props;
     const requestOptions = {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json"},
       body: JSON.stringify(this.state),
     };
     fetch("http://localhost:5000/v1/api/login", requestOptions)
@@ -33,8 +33,10 @@ export default class Login extends Component {
           alert("Error in Login");
           return Promise.reject(error);
         } else if (response.ok && data.accessToken) {
-          this.setState({ accessToken: data.accessToken });
-          history.push("/dashboard");
+          window.accessToken = data.accessToken;
+          this.props.history.push({
+            pathname: '/dashboard'
+          })
         }
       })
       .catch((error) => {
@@ -76,3 +78,5 @@ export default class Login extends Component {
     );
   }
 }
+
+export default withRouter(Login);
