@@ -21,6 +21,18 @@ To Start Front End App Run the Below Command From public Folder placed in Root D
  npm start 
 ```
 
+BACKEND APIs Detail to Register, Login,  CreateSudokuGame, Getting Solution, Reset Puzzle, Update Puzzle Data on User Inputs are Respectively : 
+```javascript
+ v1/api/register
+ v1/api/Login
+ v1/api/createNewGame
+ v1/api/solution
+ v1/api/reset
+ v1/api/updatePuzzleData
+```
+
+JWT Accesstoken is Returned in Success Login Body, Kindly Use this Token with Authorization Header for Accessing the OTHER APIs.
+
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
